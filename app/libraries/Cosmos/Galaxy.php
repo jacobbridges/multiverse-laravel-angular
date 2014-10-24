@@ -59,7 +59,7 @@ class Galaxy extends CosmosBase {
     public function __construct( $universeID )
     {
         // Set the galaxy's redis list
-        $this->setRedisList($universeID);
+        $this->redisList = $universeID;
 
         // Generate default name and ID for the galaxy
         parent::__construct(
@@ -69,7 +69,7 @@ class Galaxy extends CosmosBase {
 
         // Attempt to save the galaxy to the database
         $attempts = 1;
-        while ($this->save(self::$galaxyHash, $this->getRedisList()) == false && $attempts <= 5)
+        while ($this->save(self::$galaxyHash, $universeID) == false && $attempts <= 5)
         {
             parent::__construct(
                 $this->generateID(self::$prefix),
@@ -89,6 +89,7 @@ class Galaxy extends CosmosBase {
         echo "<br> Destroying " . $this->getMultiverseID();
         $redis = \Redis::connection();
         $redis->hdel(self::$galaxyHash, $this->getMultiverseID());
+        $redis->del($this->getRedisList());
     }
 
     /*

@@ -25,6 +25,9 @@ class Universe extends CosmosBase {
     // Prefix for assigning IDs to universes
     static private $prefix = 'universe';
     
+    // This univers's galaxies
+    static private $galaxies = [];
+    
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                           A T T R I B U T E S                           *
@@ -84,6 +87,26 @@ class Universe extends CosmosBase {
         echo "<br> Destroying " . $this->getMultiverseID();
         $redis = \Redis::connection();
         $redis->hdel(self::$universeHash, $this->getMultiverseID());
+    }
+    
+    /*
+     * Generate a child galaxy
+     */
+    public function generateGalaxy()
+    {
+        $this->numGalaxies++;
+        $new_galaxy = new \Cosmos\Galaxy( $this->getMultiverseID() );
+        array_push( $this::$galaxies, $new_galaxy);
+    }
+    
+    /*
+     * Get child galaxies
+     */
+    public function getGalaxies()
+    {
+        //$redis = \Redis::connection();
+        //return $redis->smembers($this->getMultiverseID());
+        return $this::$galaxies;
     }
 
     /*
