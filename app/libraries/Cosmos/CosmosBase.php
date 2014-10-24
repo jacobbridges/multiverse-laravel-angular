@@ -13,9 +13,6 @@ class CosmosBase {
      *                    S T A T I C   A T T R I B U T E S                    *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     
-    // The cosmos view layer
-    static $layer = 0;
-    
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                           A T T R I B U T E S                           *
@@ -51,7 +48,7 @@ class CosmosBase {
     // Get the cosmos view layer
     public function getCosmosLayer()
     {
-        return self::$layer;
+        return $this::$layer;
     }
     
     // Get the Multiverse database id
@@ -91,9 +88,9 @@ class CosmosBase {
     }
     
     // Generate an ID which complies to the "Multiverse Standard"
-    protected function generateID()
+    protected function generateID( $prefix )
     {
-        return get_class($this) . (string)(mt_rand(1000, 9999));
+        return $prefix . (string)(mt_rand(1000, 9999));
     }
     
     // Retrieve a name from the Redis database of standard names
@@ -109,6 +106,8 @@ class CosmosBase {
         $redis = \Redis::connection();
         return $redis->hsetnx($hash, $this->getMultiverseID(), $this->getMultiverseName());
     }
+    
+    // TODO: Add method for loading objects from database
     
 }
 

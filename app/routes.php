@@ -30,3 +30,8 @@ Route::get('/', function()
     echo "</pre>";
 });
 
+Route::get('forte', function()
+{
+    return View::make('hello');
+});
+

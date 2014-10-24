@@ -22,6 +22,9 @@ class Universe extends CosmosBase {
     // Redis hash for Multiverse universe names
     static private $universeNamesHash = 'cosmos:msnames';
     
+    // Prefix for assigning IDs to universes
+    static private $prefix = 'universe';
+    
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                           A T T R I B U T E S                           *
@@ -48,24 +51,34 @@ class Universe extends CosmosBase {
      *                              M E T H O D S                              *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     
-    // Universe contructor
+    /*
+     * Universe contructor
+     */
     public function __construct( )
     {
         // Generate default name and ID for the Universe
-        parent::__construct($this->generateID(), $this->generateName(self::$universeNamesHash));
+        parent::__construct(
+            $this->generateID(self::$prefix), 
+            $this->generateName(self::$universeNamesHash)
+        );
         
         // Attempt to save the universe to the database
-        $attempts = 0;
-        while ($this->save(self::$universeHash) == false && $attempts < 5)
+        $attempts = 1;
+        while ($this->save(self::$universeHash) == false && $attempts <= 5)
         {
-            parent::__construct($this->generateID(), $this->generateName(self::$universeNamesHash));
+            parent::__construct(
+                $this->generateID(self::$prefix), 
+                $this->generateName(self::$universeNamesHash)
+            );
+            
+            // Keep track of any failed attempts to save the universe
             $attempts++;
         }
-        
-        self::$layer = 0;
     }
     
-    // Universe destructor
+    /*
+     * Universe destructor
+     */
     function __destruct()
     {
         echo "<br> Destroying " . $this->getMultiverseName();
