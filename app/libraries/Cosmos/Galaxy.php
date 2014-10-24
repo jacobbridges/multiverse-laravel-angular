@@ -1,109 +1,114 @@
 <?php namespace Cosmos;
 
 /**
- * Universe
- * 
- * Class for all universe objects.
+ * Galaxy
+ *
+ * Class for all galaxy objects
  *
  * @author jacobbridges
  */
-class Universe extends CosmosBase {
-    
+
+
+class Galaxy extends CosmosBase {
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                    S T A T I C   A T T R I B U T E S                    *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
+
     // The cosmos view layer
-    static public $layer = 0;
-    
-    // Redis hash for Multiverse universes
-    static private $universeHash = 'cosmos:universes';
-    
-    // Redis hash for Multiverse universe names
-    static private $universeNamesHash = 'cosmos:msnames';
-    
-    // Prefix for assigning IDs to universes
-    static private $prefix = 'universe';
-    
-    
+    static public $layer = 1;
+
+    // Redis hash for Multiverse galaxies
+    static private $galaxyHash = 'cosmos:galaxies';
+
+    // Redis hash for Multiverse galaxy names
+    static private $galaxyNamesHash = 'cosmos:msnames';
+
+    // Prefix for assigning IDs to galaxies
+    static private $prefix = 'galaxy';
+
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                           A T T R I B U T E S                           *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
-    // Number of child galaxies for this universe
-    private $numGalaxies = 0;
-    
+
+    // Number of child solar systems for this galaxies
+    private $numSolarSystems = 0;
+
     // Number of (direct) child stars
     private $numStars = 0;
-    
+
     // Number of (direct) child novas
     private $numNovas = 0;
-    
+
     // Number of (direct) child black holes
     private $numBlackHoles = 0;
 
     // Redis hash for universe
     private $redisList = '';
-    
-    
-    
+
+
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                              M E T H O D S                              *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
+
     /*
-     * Universe constructor
+     * Galaxy constructor
      */
-    public function __construct( )
+    public function __construct( $universeID )
     {
-        // Generate default name and ID for the Universe
+        // Set the galaxy's redis list
+        $this->setRedisList($universeID);
+
+        // Generate default name and ID for the galaxy
         parent::__construct(
-            $this->generateID(self::$prefix), 
-            $this->generateName(self::$universeNamesHash)
+            $this->generateID(self::$prefix),
+            $this->generateName(self::$galaxyNamesHash)
         );
-        
-        // Attempt to save the universe to the database
+
+        // Attempt to save the galaxy to the database
         $attempts = 1;
-        while ($this->save(self::$universeHash) == false && $attempts <= 5)
+        while ($this->save(self::$galaxyHash, $this->getRedisList()) == false && $attempts <= 5)
         {
             parent::__construct(
-                $this->generateID(self::$prefix), 
-                $this->generateName(self::$universeNamesHash)
+                $this->generateID(self::$prefix),
+                $this->generateName(self::$galaxyNamesHash)
             );
-            
+
             // Keep track of any failed attempts to save the universe
             $attempts++;
         }
     }
-    
+
     /*
-     * Universe destructor
+     * Galaxy destructor
      */
     function __destruct()
     {
         echo "<br> Destroying " . $this->getMultiverseID();
         $redis = \Redis::connection();
-        $redis->hdel(self::$universeHash, $this->getMultiverseID());
+        $redis->hdel(self::$galaxyHash, $this->getMultiverseID());
     }
 
     /*
-     * Get the number of child galaxies
+     * Get the number of child solar systems
      */
-    public function getNumGalaxies()
+    public function getNumSolarSystems()
     {
-        return $this->numGalaxies;
+        return $this->numSolarSystems;
     }
 
     /*
-     * Set the number of child galaxies
+     * Set the number of child solar systems
      */
-    public function setNumGalaxies($numGalaxies)
+    public function setNumSolarSystems($numSolarSystems)
     {
-        $this->numGalaxies = $numGalaxies;
+        $this->numSolarSystems = $numSolarSystems;
     }
 
     /*
-     * Get the number of child (direct) stars
+     * Get the number of child (direct) starts
      */
     public function getNumStars()
     {
@@ -111,7 +116,7 @@ class Universe extends CosmosBase {
     }
 
     /*
-     * Set the number of child (direct) stars
+     * Set the number of child (direct) starts
      */
     public function setNumStars($numStars)
     {
@@ -133,4 +138,4 @@ class Universe extends CosmosBase {
     {
         $this->$redisList = $redisList;
     }
-}
+} 
