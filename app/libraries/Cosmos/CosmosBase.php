@@ -101,14 +101,16 @@ class CosmosBase {
     }
     
     // Save this universe to the database
-    public function save( $hash )
+    public function save( $storageHash, $parentDataHash=null )
     {
         $redis = \Redis::connection();
-        return $redis->hsetnx($hash, $this->getMultiverseID(), $this->getMultiverseName());
+        if ($parentDataHash == null)
+            return $redis->hsetnx($storageHash, $this->getMultiverseID(), $this->getMultiverseName());
+        $response1 = $redis->hsetnx($storageHash, $this->getMultiverseID(), $this->getMultiverseName());
+        $response2 = $redis->rpush($parentDataHash, $this->getMultiverseID());
+        return $response1 && $response2;
     }
     
     // TODO: Add method for loading objects from database
     
 }
-
-?>
