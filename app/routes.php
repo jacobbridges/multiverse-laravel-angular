@@ -27,12 +27,13 @@ Route::get('/', function()
     
     $galaxies = $universe->getGalaxies();
     
+    
     echo "<pre>";
 	print_r ($universe);
     echo "</pre>";
     
     echo "<pre>";
-	print_r ($galaxies);
+	print_r ($universe::$galaxies);
     echo "</pre>";
     
     $time += microtime(true);

@@ -26,7 +26,7 @@ class Universe extends CosmosBase {
     static private $prefix = 'universe';
     
     // This univers's galaxies
-    static private $galaxies = [];
+    static public $galaxies = [];
     
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -57,7 +57,7 @@ class Universe extends CosmosBase {
     /*
      * Universe constructor
      */
-    public function __construct( )
+    public function __construct()
     {
         // Generate default name and ID for the Universe
         parent::__construct(
@@ -107,6 +107,23 @@ class Universe extends CosmosBase {
         //$redis = \Redis::connection();
         //return $redis->smembers($this->getMultiverseID());
         return $this::$galaxies;
+    }
+    
+    /*
+     * Get a child galaxy by ID
+     */
+    public function getGalaxy( $galaxyID )
+    {
+        return $this::$galaxies[$galaxyID];
+    }
+    
+    /*
+     * Remove a child galaxy by ID
+     */
+    public function deleteGalaxy( $galaxyID )
+    {
+        unset($universe::$galaxies[$galaxyID]);
+        $universe::$galaxies = array_values($universe::$galaxies);
     }
 
     /*
